@@ -10,12 +10,14 @@ import EmptyState from '../components/EmptyState';
 import GroupCodeBanner from '../components/GroupCodeBanner';
 import SettingsMenu from '../components/SettingsMenu';
 import { useTheme } from '../theme/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = BottomTabScreenProps<RootTabParamList, 'Home'>;
 
 export default function HomeScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const hasMarkets = markets.length > 0;
+  const insets = useSafeAreaInsets();
 
   const handleMarketPress = (market: Market) => {
     navigation.navigate('NewInspection', { stallCode: market.stallCode });
@@ -23,7 +25,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <LinearGradient colors={colors.screenGradient} style={styles.gradient}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <View style={styles.titleRow}>
           <Text style={[styles.title, { color: colors.titlePrimary }]}>
             Market Catalog

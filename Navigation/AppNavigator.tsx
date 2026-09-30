@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import HomeScreen from '../Screens/HomeScreen';
 import NewInspectionScreen from '../Screens/NewInspectionScreen';
@@ -42,6 +43,7 @@ function RecordsStackNavigator() {
 
 export default function AppNavigator() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <NavigationContainer>
@@ -53,8 +55,9 @@ export default function AppNavigator() {
           tabBarStyle: {
             backgroundColor: colors.cardBackground,
             borderTopColor: colors.cardBorder,
-            height: 60,
-            paddingBottom: 6,
+            // 60 for the tab content + insets.bottom for the system nav bar
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom + 6,
             paddingTop: 6,
           },
           tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
