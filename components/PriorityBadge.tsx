@@ -1,4 +1,4 @@
-
+// components/PriorityBadge.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -35,17 +35,21 @@ export default function PriorityBadge({ priority }: Props) {
       };
 
   const colors = colorMap[priority];
+  const label = labelMap[priority];
 
   return (
-    <View style={[styles.badge, { backgroundColor: colors.bg }]}>
+    <View
+      style={[styles.badge, { backgroundColor: colors.bg }]}
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={`Priority: ${label}`}
+    >
       <MaterialCommunityIcons
         name={colors.icon}
         size={12}
         color={colors.text}
       />
-      <Text style={[styles.text, { color: colors.text }]}>
-        {labelMap[priority]}
-      </Text>
+      <Text style={[styles.text, { color: colors.text }]}>{label}</Text>
     </View>
   );
 }

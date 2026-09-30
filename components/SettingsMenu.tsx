@@ -20,21 +20,26 @@ export default function SettingsMenu() {
   return (
     <>
       {/* The three-dot button that sits in the header */}
-      <Pressable
-        onPress={() => setVisible(true)}
-        style={({ pressed }) => [
-          styles.iconButton,
-          { backgroundColor: colors.accentSoft },
-          pressed && { opacity: 0.7 },
-        ]}
-        hitSlop={8}
-      >
-        <MaterialCommunityIcons
-          name="dots-vertical"
-          size={22}
-          color={colors.iconPrimary}
-        />
-      </Pressable>
+     {/* The three-dot button that sits in the header */}
+<Pressable
+  onPress={() => setVisible(true)}
+  style={({ pressed }) => [
+    styles.iconButton,
+    { backgroundColor: colors.accentSoft },
+    pressed && { opacity: 0.7 },
+  ]}
+  hitSlop={8}
+  accessible={true}
+  accessibilityRole="button"
+  accessibilityLabel="Open settings"
+  accessibilityHint="Shows the group code and theme options"
+>
+  <MaterialCommunityIcons
+    name="dots-vertical"
+    size={22}
+    color={colors.iconPrimary}
+  />
+</Pressable>
 
       {/* The modal */}
       <Modal
@@ -66,17 +71,20 @@ export default function SettingsMenu() {
               >
                 Settings
               </Text>
-              <Pressable
-                onPress={() => setVisible(false)}
-                hitSlop={8}
-                style={({ pressed }) => pressed && { opacity: 0.6 }}
-              >
-                <MaterialCommunityIcons
-                  name="close"
-                  size={22}
-                  color={colors.textMuted}
-                />
-              </Pressable>
+             <Pressable
+                  onPress={() => setVisible(false)}
+                  hitSlop={8}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close settings"
+                  style={({ pressed }) => pressed && { opacity: 0.6 }}
+                >
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={22}
+                    color={colors.textMuted}
+                  />
+            </Pressable>
             </View>
 
             {/* Group verification code */}
@@ -134,6 +142,10 @@ export default function SettingsMenu() {
                 onValueChange={toggleTheme}
                 trackColor={{ false: '#D1D5DB', true: colors.accent }}
                 thumbColor="#FFFFFF"
+                accessible={true}
+                accessibilityRole="switch"
+                accessibilityLabel="Night mode"
+                accessibilityHint="Switches the app between light and dark themes"
               />
             </View>
 
