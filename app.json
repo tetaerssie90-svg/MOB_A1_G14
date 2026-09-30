@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "mob_a1",
+    "slug": "snack-48862bf5-4939-4ea2-9798-bcb32bb97506",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "newArchEnabled": false,
+    "userInterfaceStyle": "light",
+    "splash": { "resizeMode": "contain", "backgroundColor": "#ffffff" },
+    "ios": { "supportsTablet": true },
+    "android": { "edgeToEdgeEnabled": true },
+    "web": { "favicon": "./assets/favicon.png" }
+  }
+}
