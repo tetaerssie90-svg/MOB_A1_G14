@@ -6,6 +6,7 @@ import { Market } from '../Types';
 import { useTheme } from '../theme/ThemeContext';
 import StatusChip from './StatusChip';
 import PriorityBadge from './PriorityBadge';
+import CategoryPill from './CategoryPill';
 
 type Props = {
   market: Market;
@@ -39,12 +40,15 @@ export default function MarketCard({ market, onPress }: Props) {
         >
           {market.name}
         </Text>
-        <Text
-          style={[styles.meta, { color: colors.textMuted }]}
-          numberOfLines={1}
-        >
-          {market.stallCode} · {market.category}
-        </Text>
+        <View style={styles.metaRow}>
+            <Text
+              style={[styles.meta, { color: colors.textMuted }]}
+              numberOfLines={1}
+            >
+              {market.stallCode}
+            </Text>
+            <CategoryPill category={market.category} />
+          </View>
 
         <View style={styles.chipRow}>
           <StatusChip status={market.status} />
@@ -111,4 +115,11 @@ const styles = StyleSheet.create({
   chevron: {
     marginLeft: 4,
   },
-});
+  metaRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 6,
+  flexWrap: 'wrap',
+},
+}
+);
