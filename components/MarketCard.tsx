@@ -1,4 +1,4 @@
-
+// components/MarketCard.tsx
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -16,6 +16,11 @@ type Props = {
 export default function MarketCard({ market, onPress }: Props) {
   const { colors } = useTheme();
 
+  const cardLabel =
+    `${market.name}, stall ${market.stallCode}, ` +
+    `${market.category}, status ${market.status}, ` +
+    `priority ${market.priority}`;
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -28,9 +33,18 @@ export default function MarketCard({ market, onPress }: Props) {
         pressed && styles.cardPressed,
       ]}
       onPress={onPress ? () => onPress(market) : undefined}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={cardLabel}
+      accessibilityHint="Opens a new inspection form with this stall code pre-filled"
     >
       <View style={styles.imageWrap}>
-        <Image source={market.imageSource} style={styles.image} />
+        <Image
+          source={market.imageSource}
+          style={styles.image}
+          accessible={false}
+          importantForAccessibility="no"
+        />
       </View>
 
       <View style={styles.info}>
@@ -40,15 +54,16 @@ export default function MarketCard({ market, onPress }: Props) {
         >
           {market.name}
         </Text>
+
         <View style={styles.metaRow}>
-            <Text
-              style={[styles.meta, { color: colors.textMuted }]}
-              numberOfLines={1}
-            >
-              {market.stallCode}
-            </Text>
-            <CategoryPill category={market.category} />
-          </View>
+          <Text
+            style={[styles.meta, { color: colors.textMuted }]}
+            numberOfLines={1}
+          >
+            {market.stallCode}
+          </Text>
+          <CategoryPill category={market.category} />
+        </View>
 
         <View style={styles.chipRow}>
           <StatusChip status={market.status} />
@@ -61,6 +76,8 @@ export default function MarketCard({ market, onPress }: Props) {
         size={24}
         color={colors.iconMuted}
         style={styles.chevron}
+        accessible={false}
+        importantForAccessibility="no"
       />
     </Pressable>
   );
@@ -106,6 +123,12 @@ const styles = StyleSheet.create({
   meta: {
     fontSize: 12,
   },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
+  },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -115,11 +138,4 @@ const styles = StyleSheet.create({
   chevron: {
     marginLeft: 4,
   },
-  metaRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 6,
-  flexWrap: 'wrap',
-},
-}
-);
+});

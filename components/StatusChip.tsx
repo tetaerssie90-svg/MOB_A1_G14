@@ -1,4 +1,4 @@
-// Components/StatusChip.tsx
+// components/StatusChip.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MarketStatus } from '../Types';
@@ -18,7 +18,6 @@ export default function StatusChip({ status }: Props) {
   const { mode } = useTheme();
   const isDark = mode === 'dark';
 
-  // Semantic colors — adjusted for dark mode contrast
   const colorMap: Record<
     MarketStatus,
     { bg: string; text: string; dot: string }
@@ -35,13 +34,17 @@ export default function StatusChip({ status }: Props) {
       };
 
   const colors = colorMap[status];
+  const label = labelMap[status];
 
   return (
-    <View style={[styles.chip, { backgroundColor: colors.bg }]}>
+    <View
+      style={[styles.chip, { backgroundColor: colors.bg }]}
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={`Status: ${label}`}
+    >
       <View style={[styles.dot, { backgroundColor: colors.dot }]} />
-      <Text style={[styles.text, { color: colors.text }]}>
-        {labelMap[status]}
-      </Text>
+      <Text style={[styles.text, { color: colors.text }]}>{label}</Text>
     </View>
   );
 }
