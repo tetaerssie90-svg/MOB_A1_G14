@@ -1,11 +1,27 @@
-# Sample Snack app
+## QA Task — Shae (@tetaerssie90-svg)
 
-Open the `App.js` file to start writing some code. You can preview the changes directly on your phone or tablet by scanning the **QR code** or use the iOS or Android emulators. When you're done, click **Save** and share the link!
+**Role:** Quality Assurance Tester
 
-When you're ready to see everything that Expo provides (or if you want to use your own editor) you can **Download** your project and use it with [expo cli](https://docs.expo.dev/get-started/installation/#expo-cli)).
+**Objective:** Test the Safe Market application from a user's perspective and document the actual results.
 
-All projects created in Snack are publicly available, so you can easily share the link to this project via link, or embed it on a web page with the `<>` button.
+### Your responsibilities
 
-If you're having problems, you can tweet to us [@expo](https://twitter.com/expo) or ask in our [forums](https://forums.expo.dev/c/expo-dev-tools/61) or [Discord](https://chat.expo.dev/).
+1. Run the application on a physical phone or emulator.
+2. Check that the market catalog and navigation work correctly.
+3. Test form validation using incomplete and valid information.
+4. Test attaching a photo from the gallery or camera.
+5. Save an inspection and confirm that it appears in the Records section.
+6. Open an inspection and verify that its details are displayed correctly.
+7. Test switching between light and dark themes.
+8. Document bugs, unexpected behaviour, and anything you could not test.
 
-Snack is Open Source. You can find the code on the [GitHub repo](https://github.com/expo/snack).
+### Testing report
+
+After testing, add:
+- Date of testing.
+- Device and operating system.
+- Results for each test.
+- Screenshots where useful.
+- Problems discovered and recommendations.
+
+**Important:** Only report tests you have actually performed. Use fictional information during testing.
