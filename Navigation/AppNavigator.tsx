@@ -1,4 +1,4 @@
-// Navigation/AppNavigator.tsx
+
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -19,8 +19,10 @@ const RecordsStack = createNativeStackNavigator<RecordsStackParamList>();
 
 function RecordsStackNavigator() {
   const { colors } = useTheme();
+
   return (
     <RecordsStack.Navigator
+      id="RecordsStack"
       screenOptions={{
         headerStyle: { backgroundColor: colors.cardBackground },
         headerTintColor: colors.titlePrimary,
@@ -32,6 +34,7 @@ function RecordsStackNavigator() {
         component={RecordScreen}
         options={{ headerShown: false }}
       />
+
       <RecordsStack.Screen
         name="InspectionDetails"
         component={InspectionDetailScreen}
@@ -48,6 +51,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Tab.Navigator
+        id="MainTabs"
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colors.accent,
@@ -55,7 +59,6 @@ export default function AppNavigator() {
           tabBarStyle: {
             backgroundColor: colors.cardBackground,
             borderTopColor: colors.cardBorder,
-            // 60 for the tab content + insets.bottom for the system nav bar
             height: 60 + insets.bottom,
             paddingBottom: insets.bottom + 6,
             paddingTop: 6,
@@ -77,6 +80,7 @@ export default function AppNavigator() {
             ),
           }}
         />
+
         <Tab.Screen
           name="NewInspection"
           component={NewInspectionScreen}
@@ -91,6 +95,7 @@ export default function AppNavigator() {
             ),
           }}
         />
+
         <Tab.Screen
           name="Records"
           component={RecordsStackNavigator}

@@ -1,4 +1,4 @@
-// Screens/NewInspectionScreen.tsx
+
 import React, { useState } from 'react';
 import {
   View,
@@ -33,8 +33,12 @@ type RiskLevel = typeof RISK_LEVELS[number];
 
 const STALL_CODE_REGEX = /^MSN-[A-C]-\d{3}$/;
 
+function normalizePhone(input: string): string {
+  return input.replace(/\s+/g, '');
+}
+
 function isValidRwandaPhone(input: string): boolean {
-  const cleaned = input.replace(/\s/g, '');
+  const cleaned = normalizePhone(input);
   return /^(?:\+?250|0)7[2389]\d{7}$/.test(cleaned);
 }
 
@@ -57,62 +61,160 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
 
   const visibleCategories = zone ? ZONE_CATEGORIES[zone] : [];
 
+  function clearError(field: string) {
+    setErrors((previous) => {
+      if (!previous[field]) return previous;
+
+      const next = { ...previous };
+      delete next[field];
+
+      return next;
+    });
+  }
+
+  function handleVendorAliasChange(value: string) {
+    setVendorAlias(value);
+
+    if (value.trim().length >= 2) {
+      clearError('vendorAlias');
+    }
+  }
+
+  function handleStallCodeChange(value: string) {
+    setStallCode(value);
+
+    if (STALL_CODE_REGEX.test(value.trim().toUpperCase())) {
+      clearError('stallCode');
+    }
+  }
+
+  function handleContactNumberChange(value: string) {
+    setContactNumber(value);
+
+    if (isValidRwandaPhone(value)) {
+      clearError('contactNumber');
+    }
+  }
+
+  function handleRiskLevelChange(value: RiskLevel) {
+    setRiskLevel(value);
+    clearError('riskLevel');
+  }
+
+  function handleConsentChange() {
+    setConsent((previous) => {
+      const next = !previous;
+
+      if (next) {
+        clearError('consent');
+      }
+
+      return next;
+    });
+  }
+
   function handleZoneChange(next: Zone) {
     setZone(next);
+
     const allowed = ZONE_CATEGORIES[next];
-    if (!allowed.includes(category)) setCategory(allowed[0]);
+
+    if (!allowed.includes(category)) {
+      setCategory(allowed[0]);
+      clearError('category');
+    }
   }
 
   function validate(): Record<string, string> {
     const next: Record<string, string> = {};
-    if (vendorAlias.trim().length < 2)
+
+    if (vendorAlias.trim().length < 2) {
       next.vendorAlias = 'Vendor alias must be at least 2 characters.';
-    if (!STALL_CODE_REGEX.test(stallCode.trim().toUpperCase()))
+    }
+
+    if (!STALL_CODE_REGEX.test(stallCode.trim().toUpperCase())) {
       next.stallCode = 'Please select a zone and 3-digit number.';
-    if (!category) next.category = 'Please select a category.';
-    if (!isValidRwandaPhone(contactNumber))
+    }
+
+    if (!category) {
+      next.category = 'Please select a category.';
+    }
+
+    if (!isValidRwandaPhone(contactNumber)) {
       next.contactNumber = 'Use 07XXXXXXXX or +2507XXXXXXXX.';
-    if (!riskLevel) next.riskLevel = 'Please select a risk level.';
-    if (!consent) next.consent = 'You must confirm consent before saving.';
+    }
+
+    if (!riskLevel) {
+      next.riskLevel = 'Please select a risk level.';
+    }
+
+    if (!consent) {
+      next.consent = 'You must confirm consent before saving.';
+    }
+
     return next;
   }
 
   function handleContinue() {
     const next = validate();
     setErrors(next);
-    if (Object.keys(next).length === 0) setStep('review');
+
+    if (Object.keys(next).length === 0) {
+      setStep('review');
+    }
   }
 
   async function pickFromGallery() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow gallery access.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.7,
-    });
-    if (!result.canceled && result.assets[0]) {
-      setEvidenceUri(result.assets[0].uri);
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please allow gallery access.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setEvidenceUri(result.assets[0].uri);
+      }
+    } catch {
+      Alert.alert(
+        'Gallery error',
+        'Unable to open the image gallery. Please try again.'
+      );
     }
   }
 
   async function takePhoto() {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow camera access.');
-      return;
-    }
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.7,
-    });
-    if (!result.canceled && result.assets[0]) {
-      setEvidenceUri(result.assets[0].uri);
+    try {
+      const { status } =
+        await ImagePicker.requestCameraPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please allow camera access.');
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setEvidenceUri(result.assets[0].uri);
+      }
+    } catch {
+      Alert.alert(
+        'Camera error',
+        'Unable to open the camera. Please try again.'
+      );
     }
   }
 
@@ -130,18 +232,28 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
   }
 
   function handleSave() {
+    const nextErrors = validate();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      setStep('form');
+      return;
+    }
+
     const inspection: Inspection = {
       id: `i${Date.now()}`,
       vendorAlias: vendorAlias.trim(),
       stallCode: stallCode.trim().toUpperCase(),
       category,
-      contactNumber: contactNumber.trim(),
+      contactNumber: normalizePhone(contactNumber),
       riskLevel: riskLevel as RiskLevel,
       consent: true,
       evidenceImageUri: evidenceUri ?? undefined,
       createdAt: new Date().toISOString(),
     };
+
     savedInspections.push(inspection);
+
     resetForm();
     navigation.navigate('Records');
   }
@@ -153,6 +265,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
           <Text style={[styles.title, { color: colors.titlePrimary }]}>
             New Inspection
           </Text>
+
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Step 1 of 2 — Enter vendor and stall details.
           </Text>
@@ -160,31 +273,34 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
           <InputField
             label="Vendor alias"
             value={vendorAlias}
-            onChangeText={setVendorAlias}
+            onChangeText={handleVendorAliasChange}
             error={errors.vendorAlias}
             placeholder="e.g. Mama Uwase"
           />
 
           <StallCodeInput
             value={stallCode}
-            onChangeText={setStallCode}
+            onChangeText={handleStallCodeChange}
             onZoneChange={handleZoneChange}
             error={errors.stallCode}
           />
 
-          <Text
-            style={[styles.groupLabel, { color: colors.textSecondary }]}
-          >
+          <Text style={[styles.groupLabel, { color: colors.textSecondary }]}>
             Category
           </Text>
+
           {zone ? (
             <View style={styles.chipRow}>
               {visibleCategories.map((c) => {
                 const selected = category === c;
+
                 return (
                   <Pressable
                     key={c}
-                    onPress={() => setCategory(c)}
+                    onPress={() => {
+                      setCategory(c);
+                      clearError('category');
+                    }}
                     style={[
                       styles.chip,
                       {
@@ -216,6 +332,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
               Select a zone above to see available categories.
             </Text>
           )}
+
           {errors.category ? (
             <Text style={styles.error}>{errors.category}</Text>
           ) : null}
@@ -225,24 +342,24 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
           <InputField
             label="Contact number"
             value={contactNumber}
-            onChangeText={setContactNumber}
+            onChangeText={handleContactNumberChange}
             error={errors.contactNumber}
             placeholder="0788123456"
             keyboardType="phone-pad"
           />
 
-          <Text
-            style={[styles.groupLabel, { color: colors.textSecondary }]}
-          >
+          <Text style={[styles.groupLabel, { color: colors.textSecondary }]}>
             Risk level
           </Text>
+
           <View style={styles.chipRow}>
             {RISK_LEVELS.map((r) => {
               const selected = riskLevel === r;
+
               return (
                 <Pressable
                   key={r}
-                  onPress={() => setRiskLevel(r)}
+                  onPress={() => handleRiskLevelChange(r)}
                   style={[
                     styles.chip,
                     {
@@ -269,6 +386,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
               );
             })}
           </View>
+
           {errors.riskLevel ? (
             <Text style={styles.error}>{errors.riskLevel}</Text>
           ) : null}
@@ -277,7 +395,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
 
           <Pressable
             style={styles.consentRow}
-            onPress={() => setConsent((prev) => !prev)}
+            onPress={handleConsentChange}
           >
             <View
               style={[
@@ -298,18 +416,21 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
                 />
               ) : null}
             </View>
-            <Text
-              style={[styles.consentText, { color: colors.textPrimary }]}
-            >
+
+            <Text style={[styles.consentText, { color: colors.textPrimary }]}>
               The vendor consented to this fictional inspection.
             </Text>
           </Pressable>
+
           {errors.consent ? (
             <Text style={styles.error}>{errors.consent}</Text>
           ) : null}
 
           <Pressable
-            style={[styles.primaryButton, { backgroundColor: colors.accent }]}
+            style={[
+              styles.primaryButton,
+              { backgroundColor: colors.accent },
+            ]}
             onPress={handleContinue}
           >
             <Text style={styles.primaryButtonText}>
@@ -327,6 +448,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
         <Text style={[styles.title, { color: colors.titlePrimary }]}>
           Review & Evidence
         </Text>
+
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           Step 2 of 2 — Attach evidence and confirm.
         </Text>
@@ -338,6 +460,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
         <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
           Validated fields
         </Text>
+
         <View
           style={[
             styles.card,
@@ -361,12 +484,17 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
         <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
           Evidence image
         </Text>
+
         {evidenceUri ? (
           <View>
             <Image source={{ uri: evidenceUri }} style={styles.preview} />
+
             <View style={styles.evidenceActions}>
               <Pressable
-                style={[styles.smallButton, { backgroundColor: colors.accent }]}
+                style={[
+                  styles.smallButton,
+                  { backgroundColor: colors.accent },
+                ]}
                 onPress={pickFromGallery}
               >
                 <MaterialCommunityIcons
@@ -376,6 +504,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
                 />
                 <Text style={styles.smallButtonText}>Replace</Text>
               </Pressable>
+
               <Pressable
                 style={[styles.smallButton, styles.removeBtn]}
                 onPress={() => setEvidenceUri(null)}
@@ -408,14 +537,19 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
               size={32}
               color={colors.iconMuted}
             />
+
             <Text
               style={[styles.emptyEvidenceText, { color: colors.textMuted }]}
             >
               No evidence image attached yet.
             </Text>
+
             <View style={styles.evidenceActions}>
               <Pressable
-                style={[styles.smallButton, { backgroundColor: colors.accent }]}
+                style={[
+                  styles.smallButton,
+                  { backgroundColor: colors.accent },
+                ]}
                 onPress={pickFromGallery}
               >
                 <MaterialCommunityIcons
@@ -425,6 +559,7 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
                 />
                 <Text style={styles.smallButtonText}>Gallery</Text>
               </Pressable>
+
               <Pressable
                 style={[styles.smallButton, styles.cameraBtn]}
                 onPress={takePhoto}
@@ -443,12 +578,16 @@ export default function NewInspectionScreen({ route, navigation }: Props) {
         <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
           Timestamp
         </Text>
+
         <Text style={[styles.timestamp, { color: colors.textPrimary }]}>
           {new Date().toLocaleString()}
         </Text>
 
         <Pressable
-          style={[styles.primaryButton, { backgroundColor: colors.accent }]}
+          style={[
+            styles.primaryButton,
+            { backgroundColor: colors.accent },
+          ]}
           onPress={handleSave}
         >
           <MaterialCommunityIcons
@@ -493,6 +632,7 @@ function Row({
   last?: boolean;
 }) {
   const { colors } = useTheme();
+
   return (
     <View
       style={[
@@ -504,6 +644,7 @@ function Row({
       <Text style={[styles.rowLabel, { color: colors.textMuted }]}>
         {label}
       </Text>
+
       <Text style={[styles.rowValue, { color: colors.textPrimary }]}>
         {value}
       </Text>
@@ -538,7 +679,12 @@ const styles = StyleSheet.create({
   },
   chipText: { fontSize: 12, fontWeight: '600' },
   hint: { fontSize: 12, fontStyle: 'italic', marginBottom: 8 },
-  error: { color: '#DC2626', fontSize: 12, marginTop: 4, marginBottom: 8 },
+  error: {
+    color: '#DC2626',
+    fontSize: 12,
+    marginTop: 4,
+    marginBottom: 8,
+  },
   spacer: { height: 16 },
   consentRow: {
     flexDirection: 'row',
@@ -605,7 +751,11 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: 8,
   },
-  smallButtonText: { fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
+  smallButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
   cameraBtn: { backgroundColor: '#0369A1' },
   removeBtn: {
     backgroundColor: '#FEE2E2',
@@ -626,7 +776,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
   },
-  primaryButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
+  },
   secondaryButton: {
     marginTop: 10,
     paddingVertical: 12,
@@ -634,5 +788,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
   },
-  secondaryButtonText: { fontSize: 14, fontWeight: '700' },
+  secondaryButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
 });
