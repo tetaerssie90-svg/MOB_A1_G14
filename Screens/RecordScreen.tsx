@@ -7,7 +7,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { RecordsStackParamList, Inspection } from '../Types';
 import { savedInspections } from '../Data/inspectionStore';
 import RecordCard from '../components/RecordCard';
-import EmptyState from '../components/EmptyState';
 import { useTheme } from '../theme/ThemeContext';
 
 type Props = NativeStackScreenProps<RecordsStackParamList, 'RecordsList'>;
@@ -37,10 +36,14 @@ export default function RecordScreen({ navigation }: Props) {
             Saved inspections from this session
           </Text>
         </View>
-        <EmptyState
-          title="No inspections yet"
-          message="Save a new inspection from the New Inspection tab to see it here."
-        />
+        <View style={styles.emptyState}>
+          <Text style={[styles.emptyTitle, { color: colors.titlePrimary }]}>
+            No inspections yet
+          </Text>
+          <Text style={[styles.emptyMessage, { color: colors.textSecondary }]}>
+            Save a new inspection from the New Inspection tab to see it here.
+          </Text>
+        </View>
       </LinearGradient>
     );
   }
@@ -87,5 +90,13 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 24, fontWeight: '800', letterSpacing: 0.3 },
   subtitle: { fontSize: 13, marginTop: 4 },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  emptyTitle: { fontSize: 18, fontWeight: '700', textAlign: 'center' },
+  emptyMessage: { fontSize: 14, marginTop: 8, textAlign: 'center' },
   listContainer: { flex: 1, paddingHorizontal: 16 },
 });

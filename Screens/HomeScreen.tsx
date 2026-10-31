@@ -6,7 +6,6 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { RootTabParamList, Market } from '../Types';
 import { markets } from '../Data/MarketData';
 import MarketCard from '../components/MarketCard';
-import EmptyState from '../components/EmptyState';
 import GroupCodeBanner from '../components/GroupCodeBanner';
 import SettingsMenu from '../components/SettingsMenu';
 import { useTheme } from '../theme/ThemeContext';
@@ -52,10 +51,14 @@ export default function HomeScreen({ navigation }: Props) {
           />
         </View>
       ) : (
-        <EmptyState
-          title="No markets assigned"
-          message="You have no stalls to inspect right now."
-        />
+        <View style={styles.emptyState}>
+          <Text style={[styles.emptyTitle, { color: colors.titlePrimary }]}>
+            No markets assigned
+          </Text>
+          <Text style={[styles.emptyMessage, { color: colors.textSecondary }]}>
+            You have no stalls to inspect right now.
+          </Text>
+        </View>
       )}
     </LinearGradient>
   );
@@ -82,4 +85,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 13, marginTop: 4 },
   bannerWrap: { marginTop: 10 },
   listContainer: { flex: 1, paddingHorizontal: 16 },
+  emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', textAlign: 'center' },
+  emptyMessage: { fontSize: 14, marginTop: 8, textAlign: 'center' },
 });
